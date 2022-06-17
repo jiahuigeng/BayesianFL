@@ -350,7 +350,6 @@ if __name__ == '__main__':
     parser.add_argument('--method', type=str, default='Curv')
     parser.add_argument('--projectname', type=str, default='Cifar10')
     parser.add_argument('--resume', type=bool, default=False)
-    parser.add_argument('--n_round', type=int, default=5)
 
     parser.add_argument('--time', type=int, default=1)
 
