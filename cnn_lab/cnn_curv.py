@@ -1,7 +1,7 @@
 import sys
 sys.path.append("..")
-import wandb
-wandb.login(key="put your wandb key here")
+# import wandb
+# wandb.login(key="put your wandb key here")
 
 import argparse
 import os
@@ -175,7 +175,7 @@ class FedSystem(object):
             if acc > best_acc: best_acc = acc
             if local_acc > best_local_acc: best_local_acc = local_acc
             print(f'******* round = {r + 1} | acc = {round(acc, 4)} |  local acc: {round(local_acc,4)}*******')
-            wandb.log({'round': r+1, 'accuracy': acc, 'local_accuracy': local_acc})
+            # wandb.log({'round': r+1, 'accuracy': acc, 'local_accuracy': local_acc})
             logging.info( f'round: {r + 1}, acc: {round(acc, 4)}, local acc: {round(local_acc, 4)}, self acc: {round(self_acc,4)}')
 
             # lr = lr * args.lr_decay
@@ -389,12 +389,12 @@ if __name__ == '__main__':
         args.lr,
         args.time)
     tags = [filename_suffix.split('_t')[0]]
-    wandb.init(config=config, project=args.projectname, reinit=True, resume='allow',
-               id=filename_suffix, tags=tags)
+    # wandb.init(config=config, project=args.projectname, reinit=True, resume='allow',
+    #            id=filename_suffix, tags=tags)
 
     fed_sys = FedSystem(args, filename_suffix)
     acc, local_acc, best_acc, best_local_acc = fed_sys.server_excute()
-    wandb.run.summary["final_accuracy"] = acc
-    wandb.run.summary["final_local_accuracy"] = local_acc
-    wandb.run.summary["bset_accuracy"] = best_acc
-    wandb.run.summary["best_local__accuracy"] = best_local_acc
+    # wandb.run.summary["final_accuracy"] = acc
+    # wandb.run.summary["final_local_accuracy"] = local_acc
+    # wandb.run.summary["bset_accuracy"] = best_acc
+    # wandb.run.summary["best_local__accuracy"] = best_local_acc
