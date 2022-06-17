@@ -30,7 +30,7 @@ for((a=0; a<alpha_length; a++))
                                 if [ $p == 0 ]
                                 then
                                    echo "Run AVG No Csd"
-                                   # python ${paras[p]} ${hp} '--n_epoch='${n_epoch[e]} '--alpha='${alpha[a]} '--csd_importance=0' '--gpu='${gpu_num[a]}
+                                   python ${paras[p]} ${hp} '--n_epoch='${n_epoch[e]} '--alpha='${alpha[a]} '--csd_importance=0' '--gpu='${gpu_num[a]}
                                 elif [ $p == 1 ]
                                 then
                                    echo "Run Ours with Csd"

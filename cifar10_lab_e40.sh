@@ -3,10 +3,10 @@ alpha_length=4
 csd_length=3
 epoch_length=5
 times=5
-hp='--data=cifar10 --n_round=20 --n_client=20 --pruing_p=0'
+hp='--data=cifar10 --n_round=20 --n_client=5 --pruing_p=0'
 alpha=('0.01' '0.05' '0.1' '1')
 n_epoch='40'
-gpu_num=('1' '2' '3' '4')
+gpu_num=('2' '3')
 time_num='0' #('0' '1' '2' '3' '4')
 paras[0]='./cnn_lab/cnn_fedavg.py'
 paras[1]='./cnn_lab/cnn_ours.py'

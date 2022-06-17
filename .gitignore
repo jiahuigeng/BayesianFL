@@ -1,2 +1,5 @@
 .idea
 cnn_lab/data
+__pycache__
+data/
+hyperlog/
