@@ -5,6 +5,7 @@ sys.path.append("..")
 
 import argparse
 import os
+sys.path.append(os.getcwd())
 import logging
 import torch
 

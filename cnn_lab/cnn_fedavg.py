@@ -1,11 +1,13 @@
 import argparse
 import sys
 sys.path.append("..")
+
 # import wandb
 # wandb.login(key="put your wandb key here")
 
 import argparse
 import os
+sys.path.append(os.getcwd())
 import logging
 import torch
 
@@ -374,7 +376,7 @@ if __name__ == '__main__':
         args.time)
     tags = [filename_suffix.split('_t')[0]]
     # wandb.init(config=config, project=args.projectname, reinit=True, resume='allow',
-               id=filename_suffix, tags=tags)
+    #            id=filename_suffix, tags=tags)
 
     fed_sys = FedSystem(args, filename_suffix)
     acc, local_acc, best_acc, best_local_acc = fed_sys.server_excute()

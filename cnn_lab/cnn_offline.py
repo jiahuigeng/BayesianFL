@@ -4,6 +4,7 @@ import argparse
 from torch import optim
 from torch.utils.data import DataLoader
 import os
+sys.path.append(os.getcwd())
 import logging
 from dirichlet_data import *
 from model import *

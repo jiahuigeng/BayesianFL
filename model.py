@@ -2,10 +2,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import models
-from ShuffleNet import shufflenet as _shufflenet
-
-def shufflenet():
-    return _shufflenet()
+# from ShuffleNet import shufflenet as _shufflenet
+#
+# def shufflenet():
+#     return _shufflenet()
 
 def weight_init(m):
     if isinstance(m, torch.nn.Conv2d) or isinstance(m, torch.nn.Linear):
