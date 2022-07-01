@@ -31,6 +31,7 @@ for((a=0; a<alpha_length; a++))
                                 if [ $p == 0 ]
                                 then
                                    echo "Run AVG No Csd"
+                                   echo "python ${paras[p]} ${hp} --n_epoch=${n_epoch[e]} --alpha=${alpha[a]} --csd_importance=0 --gpu=${gpu_num[a]}"
                                    # python ${paras[p]} ${hp} '--n_epoch='${n_epoch[e]} '--alpha='${alpha[a]} '--csd_importance=0' '--gpu='${gpu_num[a]}
                                 elif [ $p == 1 ]
                                 then
@@ -38,7 +39,7 @@ for((a=0; a<alpha_length; a++))
                                    for((c=0; c<csd_length; c++))
                                         do
                                             {
-                                                python ${paras[p]} ${hp} '--n_epoch='${n_epoch} '--alpha='${alpha[a]} '--csd_importance='${csd_ours[c]} '--gpu='${gpu_num[a]} '--time='${t}
+                                                echo "python ${paras[p]} ${hp} --n_epoch=${n_epoch} --alpha=${alpha[a]} --csd_importance=${csd_ours[c]} --gpu=${gpu_num[a]} --time=${t}"
                                             }
                                    done
                                 elif [ $p == 2 ]
@@ -47,7 +48,8 @@ for((a=0; a<alpha_length; a++))
                                    for((c=0; c<csd_length; c++))
                                         do
                                             {
-                                                python ${paras[p]} ${hp} '--n_epoch='${n_epoch} '--alpha='${alpha[a]} '--csd_importance='${csd_curv[c]} '--gpu='${gpu_num[a]} '--time='${t}
+                                                echo "python ${paras[p]} ${hp} --n_epoch=${n_epoch} --alpha=${alpha[a]} --csd_importance=${csd_curv[c]} --gpu=${gpu_num[a]} --time=${t}"
+#                                                python ${paras[p]} ${hp} '--n_epoch='${n_epoch} '--alpha='${alpha[a]} '--csd_importance='${csd_curv[c]} '--gpu='${gpu_num[a]} '--time='${t}
                                             }
                                    done
 
@@ -56,7 +58,7 @@ for((a=0; a<alpha_length; a++))
                                    for((c=0; c<csd_length; c++))
                                         do
                                             {
-                                                python ${paras[p]} ${hp} '--n_epoch='${n_epoch} '--alpha='${alpha[a]} '--csd_importance='${csd_prox[c]} '--gpu='${gpu_num[a]} '--time='${t}
+                                                echo "python ${paras[p]} ${hp} --n_epoch=${n_epoch} --alpha=${alpha[a]} --csd_importance=${csd_prox[c]} --gpu=${gpu_num[a]} --time=${t}"
                                             }
                                    done
                                 fi

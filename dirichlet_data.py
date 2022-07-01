@@ -1,9 +1,23 @@
-from torchvision import datasets, transforms
-import numpy as np
-from torch.utils.data import DataLoader, Dataset
-from copy import deepcopy
-from cnn_lab.autoaugment import Cutout, CIFAR10Policy
 import random
+import numpy as np
+from PIL import Image
+import os.path as osp
+import pandas as pd
+from copy import deepcopy
+
+import torch
+from torch.utils.data import DataLoader, Dataset
+from torchvision import datasets, transforms
+from cnn_lab.autoaugment import Cutout, CIFAR10Policy
+
+SICAPV2_PATH = "/data/BasesDeDatos/SICAP/SICAPv2/"
+PANDA_PATH = "/data/BasesDeDatos/Panda/Panda_patches_resized/"
+
+MILANOMA_PATH = ""
+
+MINI_PANDA_PATH = "/home/jiahui/data/minipanda"
+MINI_SICAPV2_PATH = "/home/jiahui/data/minisicap"
+panda_stats = {"norm_mean":  (0.4914, 0.4822, 0.4465), "norm_std": (0.2023, 0.1994, 0.2010)}
 
 class DatasetSplit(Dataset):
     """An abstract Dataset class wrapped around Pytorch Dataset class.
@@ -20,6 +34,101 @@ class DatasetSplit(Dataset):
     def __getitem__(self, item):
         img, label = self.dataset[self.idxs[item]]
         return img, label #self.data[item], self.targets[item]
+
+class MelanomaDataset(Dataset):
+    def __init__(self, df, meta_features=None, transform=None):
+        # self.csv = csv.reset_index(drop=True)
+        self.data_df = df
+        self.use_meta = meta_features is not None
+        self.meta_features = meta_features
+        self.transform = transform
+        self.data = []
+        onehot_targets = self.data_df[['MEL', 'NV', 'BCC', 'AK', 'BKL', 'DF', 'VASC', 'SCC', 'UNK']].values
+        self.targets = np.argmax(onehot_targets, axis=1)
+
+
+    def __len__(self):
+        return self.data_df.shape[0]
+
+    def __getitem__(self, index):
+        if torch.is_tensor(index):
+            index = index.tolist()
+        row = self.data_df.iloc[index]
+
+        image = Image.open(osp.join(MILANOMA_PATH, row.image+".jpg"))
+        if self.transform is not None:
+            image = self.transform(image)
+
+        # target = np.array(self.data_df.loc[index, ['MEL', 'NV', 'BCC', 'AK', 'BKL', 'DF', 'VASC', 'SCC', 'UNK']])
+        # target = np.argmax(target)
+        target = self.targets[index]
+        if self.use_meta:
+            data = (image, torch.tensor(self.data_df.iloc[index][self.meta_features]).float())
+        else:
+            data = image
+        return data, target
+
+class PandaDatast(Dataset):
+    def __init__(self, df):
+        # self.csv = csv.reset_index(drop=True)
+        self.data_df = df
+        self.transform = transforms.Compose([transforms.Resize((32,32)),
+                                            # transforms.RandomHorizontalFlip(),
+                                            # transforms.RandomRotation(degrees=60),
+                                            transforms.ToTensor(),
+                                            # transforms.Normalize(panda_stats["norm_mean"], panda_stats["norm_std"])
+                                             ])
+        self.data = []
+        # onehot_targets = self.data_df[['MEL', 'NV', 'BCC', 'AK', 'BKL', 'DF', 'VASC', 'SCC', 'UNK']].values
+        onehot_targets = self.data_df[['NC','G3','G4','G5','unlabeled']].values
+        self.targets = np.argmax(onehot_targets, axis=1)
+
+    def __len__(self):
+        return self.data_df.shape[0]
+
+    def __getitem__(self, index):
+        if torch.is_tensor(index):
+            index = index.tolist()
+        row = self.data_df.iloc[index]
+
+        image = Image.open(osp.join(PANDA_PATH, "images", row["image_name"]))
+        if self.transform is not None:
+            image = self.transform(image)
+
+        target = self.targets[index]
+
+        return image, target
+
+class MiniPandaDatast(Dataset):
+    def __init__(self, df):
+        # self.csv = csv.reset_index(drop=True)
+        self.data_df = df
+        self.transform = transforms.Compose([transforms.Resize((32,32)),
+                                            # transforms.RandomHorizontalFlip(),
+                                            # transforms.RandomRotation(degrees=60),
+                                            transforms.ToTensor(),
+                                            # transforms.Normalize(panda_stats["norm_mean"], panda_stats["norm_std"])
+                                             ])
+        self.data = []
+        # onehot_targets = self.data_df[['MEL', 'NV', 'BCC', 'AK', 'BKL', 'DF', 'VASC', 'SCC', 'UNK']].values
+        onehot_targets = self.data_df[['NC','G3','G4','G5','unlabeled']].values
+        self.targets = np.argmax(onehot_targets, axis=1)
+
+    def __len__(self):
+        return self.data_df.shape[0]
+
+    def __getitem__(self, index):
+        if torch.is_tensor(index):
+            index = index.tolist()
+        row = self.data_df.iloc[index]
+
+        image = Image.open(osp.join(MINI_PANDA_PATH, "images", row["image_name"]))
+        if self.transform is not None:
+            image = self.transform(image)
+
+        target = self.targets[index]
+
+        return image, target
 
 def get_client_alpha(train_set_group):
     client_n_sample = [len(ts.idxs) for ts in train_set_group]
@@ -77,6 +186,31 @@ def dirichlet_data(data_name, num_users=10, alpha = 100):
                                             transforms.ToTensor(),
                                             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
                                         ]))
+
+
+    elif data_name == "panda":
+        train_df_raw = pd.read_csv(osp.join(PANDA_PATH, "train_patches.csv"))
+        test_df_raw = pd.read_csv(osp.join(PANDA_PATH, "test_patches.csv"))
+        dataset = PandaDatast(train_df_raw)
+        test_dataset = PandaDatast(test_df_raw)
+
+    elif data_name == "minipanda":
+        train_df_raw = pd.read_csv(osp.join(MINI_PANDA_PATH, "mini_train_patches.csv"))
+        test_df_raw = pd.read_csv(osp.join(MINI_PANDA_PATH, "mini_test_patches.csv"))
+
+        dataset = MiniPandaDatast(train_df_raw)
+        test_dataset = MiniPandaDatast(train_df_raw)
+
+    elif data_name == "sicapv2":
+        dataset = None
+
+        test_dataset = None
+
+    elif data_name == "melanoma":
+        dataset = None
+
+        test_dataset = None
+
     else:
         print ('Data name error')
         return None
